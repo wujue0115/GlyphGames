@@ -85,32 +85,6 @@ class MovingPlatformStrategy : IPlatformStrategy {
     override fun getColor(): Int = 180
 }
 
-// ========================= 命令模式：遊戲行為 =========================
-interface IGameCommand {
-    fun execute()
-}
-
-class StartGameCommand(private val game: Game) : IGameCommand {
-    override fun execute() {
-        game.startGame()
-    }
-}
-
-class PauseGameCommand(private val game: Game) : IGameCommand {
-    override fun execute() {
-        when (game.gameState) {
-            Game.GameState.PLAYING -> game.pauseGame()
-            Game.GameState.PAUSED -> game.resumeGame()
-            else -> {}
-        }
-    }
-}
-
-class RestartGameCommand(private val game: Game) : IGameCommand {
-    override fun execute() {
-        game.restartGame()
-    }
-}
 
 // ========================= 觀察者模式：計分系統 =========================
 interface IScoreObserver {
@@ -276,6 +250,8 @@ class GameRenderer(private val glyphMatrixManager: GlyphMatrixManager?) {
     }
     
     fun renderHomeScreen() {
+        Log.d("GameRenderer", "Rendering Home Screen")
+
         val grid = IntArray(Game.SCREEN_WIDTH * Game.SCREEN_HEIGHT) { 0 }
         
         // 繪製簡單的開始畫面 - 中央顯示玩家圖示
@@ -526,15 +502,13 @@ class Game : IScoreObserver {
         }
     }
     
-    // 命令模式處理
     fun handleLongPress() {
-        val command = when (gameState) {
-            GameState.HOME -> StartGameCommand(this)
-            GameState.PLAYING -> PauseGameCommand(this)
-            GameState.PAUSED -> PauseGameCommand(this)
-            GameState.GAME_OVER -> RestartGameCommand(this)
+        when (gameState) {
+            GameState.HOME -> startGame()
+            GameState.PLAYING -> pauseGame()
+            GameState.PAUSED -> resumeGame()
+            GameState.GAME_OVER -> restartGame()
         }
-        command.execute()
     }
     
     override fun onScoreChanged(newScore: Int, highScore: Int) {
@@ -587,8 +561,7 @@ class JumpGameService : GlyphMatrixService("Doodle-Jump-Game") {
             // 設置渲染器
             val renderer = GameRenderer(glyphMatrixManager)
             game.setRenderer(renderer)
-            
-            Log.d(TAG, "Game initialized and ready to play")
+            Log.d(TAG, "Game initialized and ready to play - home screen rendered")
         } catch (e: Exception) {
             Log.e(TAG, "Error in performOnServiceConnected", e)
         }
@@ -615,7 +588,7 @@ class JumpGameService : GlyphMatrixService("Doodle-Jump-Game") {
     override fun onTouchPointLongPress() {
         try {
             Log.d(TAG, "Long press detected - current state: ${game.gameState}")
-            game.handleLongPress() // 使用命令模式處理
+            game.handleLongPress()
         } catch (e: Exception) {
             Log.e(TAG, "Error in onTouchPointLongPress", e)
         }
