@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Glyph Jump Game</string>
+    <string name="app_name">Glyph Game</string>
 
     <string name="settings_title">Game Settings</string>
     <string name="settings_section_tilt">Tilt controls</string>

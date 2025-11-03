@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Glyph 跳躍遊戲</string>
+    <string name="app_name">Glyph 遊戲</string>
     <string name="settings_title">遊戲設定</string>
     <string name="settings_section_tilt">傾斜控制</string>
     <string name="settings_section_tilt_description">調整手機傾斜對水平移動的影響程度。</string>
